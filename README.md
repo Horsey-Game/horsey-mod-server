@@ -33,3 +33,13 @@ the private signing key never goes in this repo and never goes on the server. th
 ## running it
 
 gunicorn runs the app on 127.0.0.1:8099 and a cloudflare tunnel forwards the public hostname to it. see horsey-mods.service for the systemd setup
+
+## credits
+
+thanks to everyone who helped with this
+
+- Kars for the icons and support
+- bwhatsonn for ideas
+- JumboDS64 for ideas. check out his game Cain Iddo Break Week https://store.steampowered.com/app/4068390/Cain_Iddo_Break_Week/
+- cpt2angry for ideas
+- everyone in the horsey game discord server
