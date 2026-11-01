@@ -1,0 +1,26 @@
+[Unit]
+Description=Horsey mod server
+After=network.target
+
+[Service]
+User=horsey-mods
+Group=horsey-mods
+WorkingDirectory=/mnt/data1/horsey-server
+ExecStart=/mnt/data1/horsey-server/venv/bin/gunicorn -w 1 --threads 8 -b 127.0.0.1:8099 app:app
+Environment=PYTHONDONTWRITEBYTECODE=1
+Restart=on-failure
+
+NoNewPrivileges=yes
+ProtectSystem=strict
+ProtectHome=yes
+PrivateTmp=yes
+PrivateDevices=yes
+ProtectKernelTunables=yes
+ProtectKernelModules=yes
+ProtectControlGroups=yes
+RestrictSUIDSGID=yes
+RestrictAddressFamilies=AF_INET AF_INET6 AF_UNIX
+LockPersonality=yes
+
+[Install]
+WantedBy=multi-user.target
