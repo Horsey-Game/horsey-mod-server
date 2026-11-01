@@ -1,8 +1,8 @@
-﻿# horsey-mods server
+# horsey game mod loader server
 
 the scripts that run the mod server and sign the mod list
 
-this is the server branch. the mod manager app is on the manager branch
+this is the server branch. the mod manager app is on the manager branch and the shim is on the shim branch
 
 gpl-3.0 see LICENSE
 
