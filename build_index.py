@@ -16,6 +16,7 @@ SEQ_FILE = FILES.parent / "index_sequence.txt"
 BASE_URL = "https://mods.badasswizard.boats"
 SHIM_API_VERSION = 1
 ID_PATTERN = re.compile(r"^[A-Za-z0-9_-]+$")
+MANAGER_PATTERN = re.compile(r"^horsey-mod-manager-(\d+(?:\.\d+)*)-setup\.exe$")
 
 
 def read_manifest(zf):
@@ -52,6 +53,28 @@ def describe(path):
     }
 
 
+# sucht den installer mit der höchsten version im files-ordner
+def manager_entry():
+    best = None
+    for path in FILES.glob("horsey-mod-manager-*-setup.exe"):
+        match = MANAGER_PATTERN.match(path.name)
+        if not match:
+            continue
+        version = match.group(1)
+        key = tuple(int(part) for part in version.split("."))
+        if best is None or key > best[0]:
+            best = (key, version, path)
+    if best is None:
+        return None
+    _, version, path = best
+    return {
+        "version": version,
+        "sha256": hashlib.sha256(path.read_bytes()).hexdigest(),
+        "size": path.stat().st_size,
+        "download_url": f"{BASE_URL}/files/{path.name}",
+    }
+
+
 def next_sequence():
     last = int(SEQ_FILE.read_text().strip()) if SEQ_FILE.exists() else 0
     return last + 1
@@ -66,7 +89,16 @@ def main():
             print(f"skipped {path.name}: {err}")
     seq = next_sequence()
     SEQ_FILE.write_text(str(seq))
-    index = {"sequence": seq, "mods": mods}
+    shim = FILES / "version.dll"
+    shim_entry = None
+    if shim.exists():
+        shim_entry = {
+            "sha256": hashlib.sha256(shim.read_bytes()).hexdigest(),
+            "size": shim.stat().st_size,
+            "download_url": f"{BASE_URL}/files/version.dll",
+        }
+    # manager-eintrag nur wenn ein installer im files-ordner liegt
+    index = {"sequence": seq, "shim": shim_entry, "manager": manager_entry(), "mods": mods}
     (FILES / "index.json").write_text(json.dumps(index, indent=2))
     print(f"wrote index.json with {len(mods)} mod(s), sequence {seq}")
 

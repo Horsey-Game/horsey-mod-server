@@ -32,6 +32,8 @@ def index_signature():
 @app.get("/files/<name>")
 @limiter.limit("20 per minute")
 def download(name):
-    if not name.endswith(".zip"):
+    # nur mod-zips, die shim und den manager-installer ausliefern
+    manager_installer = name.startswith("horsey-mod-manager-") and name.endswith("-setup.exe")
+    if not (name.endswith(".zip") or name == "version.dll" or manager_installer):
         abort(404)
     return send_from_directory(FILES, name, as_attachment=True)
